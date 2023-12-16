@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from store.models import Product
 from .models import Cart, CartItem
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
@@ -60,7 +61,7 @@ def remove_cart_item(request, product_id):
     return redirect('cart')
 
 
-def cart(request, total=0, quantity=0, cart_items=None):
+def cart(request, total=0, quantity=0, cart_items=None, tax=0, grand_total=0):
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
@@ -69,7 +70,7 @@ def cart(request, total=0, quantity=0, cart_items=None):
             quantity += cart_item.quantity
         tax = (5 * total)/100
         grand_total = total + tax
-    except ObjectNotExists:
+    except ObjectDoesNotExist:
         pass
 
     context = {
